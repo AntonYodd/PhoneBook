@@ -1,130 +1,110 @@
-def delete_contact():
-    if contact_found:
-        print('Контакт успешно удален!')
+# Создать телефонный справочник с возможностью импорта и экспорта данных в формате .txt. 
+# Фамилия, имя, отчество, номер телефона - данные, которые должны находиться в файле.
+
+# 1. Программа должна выводить данные
+# 2. Программа должна сохранять данные в текстовом файле
+# 3. Пользователь может ввести одну из характеристик для поиска определенной
+# записи(Например имя или фамилию человека)
+# 4. Использование функций. Ваша программа не должна быть линейной
+
+# Задача 38: Дополнить телефонный справочник возможностью изменения и удаления данных. Пользователь также может ввести имя или фамилию, и Вы должны реализовать функционал для изменения и удаления данных
+
+def interface_contact(phone_list_name_file = 'phonebook.txt'):
+    interface_contact = int(input('Введите 1 для поиска \nВведите 2 для добавления контакта \nВведите 3 для изменеия контакта \nВведите 4 для удаления контакта \nВведите 5 для вывода всех контактов \nВведите 0 для выхода:\n'))
+    while interface_contact != 0:
+        if interface_contact == 1:
+            find_contact()
+        elif interface_contact == 2:
+            write_contact()
+        elif interface_contact == 3:
+            update_contact()
+        elif interface_contact == 4:
+            delete_contact()
+        else:
+            print_contacts()
+            print()
+        interface_contact = int(input('\nВведите 1 для поиска \nВведите 2 для добавления контакта \nВведите 3 для изменения контакта \nВведите 4 для удаления контакта \nВведите 5 для вывода всех контактов \nВведите 0 для выхода:\n'))
+
+
+def write_contact(phone_list_name_file = 'phonebook.txt'):
+    with open(phone_list_name_file, 'a', encoding='UTF-8') as phone_list:
+        last_name = input('Введите фамилию: ').title()        
+        first_name = input('Введите имя: ').title()
+        phone = input('Введите номер телефона в международном формате: ')
+        while len(phone) != 11 or not phone.isdigit():
+            print('Вы ввели неправильный телефон')
+            phone = input('Введите номер телефона в международном формате (11 цифр): ')
+        phone_list.write('\n' + last_name + ', ' +  first_name + ', ' +  phone)
+
+
+def find_contact(phone_list_name_file = 'phonebook.txt'):
+    with open(phone_list_name_file, 'r', encoding='UTF-8') as phone_list:
+        find_name = input('Поиск: ').title()
+        lines = phone_list.readlines()
+        none_contact = True
+        for i in lines:
+            if find_name in i:
+                print('Контакт найден:', i, end = '')
+                none_contact = False
+        if none_contact:
+            print('Контакт не найден.')
+
+
+def print_contacts(phone_list_name_file = 'phonebook.txt'):
+    with open(phone_list_name_file, 'r', encoding='UTF-8') as phone_list:
+        lines = phone_list.readlines()
+        for i in lines:
+            print(i, end = '')
+
+
+def update_contact(phone_list_name_file = 'phonebook.txt'):
+    last_name = input('Введите фамилию контакта, который хотите изменить: ').title()
+    first_name = input('Введите имя контакта, который хотите изменить: ').title()
+    with open(phone_list_name_file, 'r', encoding='UTF-8') as phone_list:
+        lines = phone_list.readlines()
+    found_contact = False
+    for i in range(len(lines)):
+        contact_data = lines[i].strip().split(',')
+        contact_last_name = contact_data[0].strip()
+        contact_first_name = contact_data[1].strip()
+        if contact_last_name == last_name and contact_first_name == first_name:
+            new_last_name = input('Введите новую фамилию контакта: ').title()
+            new_first_name = input('Введите новое имя контакта: ').title()
+            new_phone = input('Введите новый номер телефона контакта в международном формате: ')
+            while len(new_phone) != 11 or not new_phone.isdigit():
+                print('Вы ввели неправильный телефон')
+                new_phone = input('Введите новый номер телефона контакта в международном формате (11 цифр): ')
+            contact_data[0] = new_last_name
+            contact_data[1] = new_first_name
+            contact_data[2] = new_phone
+            lines[i] = ', '.join(contact_data) + '\n'
+            found_contact = True
+            break
+    if found_contact:
+        with open(phone_list_name_file, 'w', encoding='UTF-8') as phone_list:
+            phone_list.writelines(lines)
+        print('Контакт успешно обновлен.')
     else:
         print('Контакт не найден.')
 
 
+def delete_contact(phone_list_name_file = 'phonebook.txt'):
+    find_name_1 = input('Введите фамилию контакта, который хотите удалить: ').title()
+    find_name_2 = input('Введите имя контакта, который хотите удалить: ').title()
+    with open(phone_list_name_file, 'r', encoding='UTF-8') as phone_list:
+        lines = phone_list.readlines()
+    with open(phone_list_name_file, 'w', encoding='UTF-8') as phone_list:
+        contact_found = False
+        for line in lines:
+            contact = line.strip().split(', ')
+            if (find_name_1 not in contact[0]) or (find_name_2 not in contact[1]):
+                phone_list.write(line)
+            else:
+                contact_found = True
+        if contact_found:
+            print('Контакт успешно удален.')
+        else:
+            print('Контакт не найден.')
 
 
-
-
-
-    
-
-def readall(nm):
-    with open(nm, 'r', encoding='utf8') as txt_file:
-        for line in txt_file:
-            print(line.strip())
-
-
-def write_1(nm):
-    str_new1 = input('Фамилия: ')
-    str_new2 = input('Имя: ')
-    str_new3 = input('Отчество: ')
-    str_new4 = input('Телефон: ')
-    str_new = '\n' + str_new1 + ', ' + str_new2+ ', ' + str_new3+ ', ' + str_new4
-    with open(nm, 'a', encoding='utf8') as txt_file:
-        txt_file.write(str_new)
-
-
-def find_item(nm):
-    item = input('Характеристика: ')
-    with open(nm, 'r', encoding='utf8') as txt_file:
-        for line in txt_file:
-            if item.lower() in line.lower():
-                print(line.strip())
-
-
-def find_item_2(nm):
-    item = input('Что ищем: ')
-    item_type = int(input('Введите номер (0-фамилия, 1-имя, 2-отчество, 3-телефон): '))
-    with open(nm, 'r', encoding='utf8') as txt_file:
-        for line in txt_file:
-            line = line.split(', ')
-            if item.lower() in line[item_type].lower():
-                print(*line)
-
-
-def sort_data(nm):
-    list_1 = []
-    item_type = int(input('Введите номер (0-фамилия, 1-имя, 2-отчество, 3-телефон): '))
-    with open(nm, 'r', encoding='utf8') as txt_file:
-        for line in txt_file: line = line.split(', ')
-        list_1.append(line)
-        list_1.sort(key=lambda person: person[item_type])
-        with open(nm, 'w', encoding='utf8') as txt_file:
-            for line in list_1: line = ', '.join(line)
-            txt_file.write(line)
-
-
-
-
-
-# write_1('data.txt')
-# readall('data.txt')
-# find_item('data.txt')
-# find_item_2('data.txt') sort_data('data.txt')
-
-
-
-
-
-def add_person():
-    name_first = input('Введите имя: ')
-    name_last = input('Введите фамилию: ')
-    phone_num = input('Введите телефон: ')
-    with open('phone_book.txt', 'a', encoding='utf-8') as book:
-        book.write(f'{name_first} {name_last} {phone_num}\n')
-
-
-def create_file():
-    with open('phone_book.txt', 'w', encoding='utf-8') as book:
-        book.write('Имя Фамилия Телефон\n')
-
-
-def search_name():
-    name_search = input('Введите имя для поиска: ')
-    with open('phone_book.txt', 'r', encoding='utf-8') as book:
-        for line in book:
-            if name_search.lower() == (note:=line.strip('\n').split())[0].lower():
-                return note
-    return "Запись не найдена"
-
-
-def search_surname():
-    surname_search = input('Введите фамилию для поиска: ')
-    with open('phone_book.txt', 'r', encoding='utf-8') as book:
-        for line in book:
-            if surname_search.lower() == (note:=line.strip('\n').split())[1].lower():
-                return note
-    return "Запись не найдена"
-
-
-def search_phone():
-    phone_search = input('Введите фамилию для поиска: ')
-    with open('phone_book.txt', 'r', encoding='utf-8') as book:
-        for line in book:
-            if phone_search.lower() == (note:=line.strip('\n').split())[2].lower():
-                return note
-    return "Запись не найдена"
-
-
-def main():
-    print('1) Создать файл телефонной книги ', '2) Добавить запись в телефонную книгу', '3) Найти запись по имени', '4) Найти запись по фамилии', '5) Найти запись по телефону', '6) Выход' , sep='\n', end='\n')
-
-    match input():
-        case '1':
-            create_file()
-        case '2':
-            add_person()
-        case '3':
-            print(search_name())
-        case '4':
-            print(search_surname())
-        case '5':
-            print(search_phone())
-        case '6':
-            print("Good bye")
-
-main()
+interface_contact()
